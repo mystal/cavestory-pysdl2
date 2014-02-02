@@ -1,10 +1,12 @@
 import ctypes
 from sdl2 import *
 
+from animated_sprite import AnimatedSprite
 from graphics import Graphics
 from sprite import Sprite
 
 FPS = 60
+TILE_SIZE = 32
 
 class Game:
     def __init__(self):
@@ -18,9 +20,11 @@ class Game:
         graphics = Graphics()
         event = SDL_Event()
 
-        self.sprite = Sprite(b'content/MyChar.bmp', 0, 0, 32, 32)
+        self.sprite = AnimatedSprite(b'content/MyChar.bmp', 0, 0,
+                                     TILE_SIZE, TILE_SIZE, 15, 3)
 
         running = True
+        lastUpdateTime = SDL_GetTicks()
         while running:
             startTime = SDL_GetTicks()
             while SDL_PollEvent(ctypes.byref(event)):
@@ -28,7 +32,10 @@ class Game:
                     if event.key.keysym.sym == SDLK_ESCAPE:
                         running = False
 
-            self.update()
+            currentTime = SDL_GetTicks()
+            self.update(currentTime - lastUpdateTime)
+            lastUpdateTime = currentTime
+
             self.draw(graphics)
 
             # This loop lasts 1/60th of a second, or 1000/60th ms
@@ -38,8 +45,8 @@ class Game:
         self.sprite.cleanUp()
         graphics.cleanUp()
 
-    def update(self):
-        pass
+    def update(self, elapsedTime):
+        self.sprite.update(elapsedTime)
 
     def draw(self, graphics):
         self.sprite.draw(graphics, 320, 240)

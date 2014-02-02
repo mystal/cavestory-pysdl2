@@ -12,6 +12,9 @@ class Sprite:
     def cleanUp(self):
         SDL_FreeSurface(self.spriteSheet)
 
+    def update(self, elapsedTime):
+        pass
+
     def draw(self, graphics, x, y):
         destinationRect = SDL_Rect()
         destinationRect.x = x
