@@ -3,6 +3,7 @@ from sdl2 import *
 
 from animated_sprite import AnimatedSprite
 from graphics import Graphics
+from input import Input
 from sprite import Sprite
 
 FPS = 60
@@ -18,6 +19,7 @@ class Game:
 
     def eventLoop(self):
         graphics = Graphics()
+        input = Input()
         event = SDL_Event()
 
         self.sprite = AnimatedSprite(b'content/MyChar.bmp', 0, 0,
@@ -27,10 +29,15 @@ class Game:
         lastUpdateTime = SDL_GetTicks()
         while running:
             startTime = SDL_GetTicks()
+            input.beginNewFrame()
             while SDL_PollEvent(ctypes.byref(event)):
                 if event.type == SDL_KEYDOWN:
-                    if event.key.keysym.sym == SDLK_ESCAPE:
-                        running = False
+                    input.keyDownEvent(event)
+                elif event.type == SDL_KEYUP:
+                    input.keyUpEvent(event)
+
+            if input.wasKeyPressed(SDLK_ESCAPE):
+                running = False
 
             currentTime = SDL_GetTicks()
             self.update(currentTime - lastUpdateTime)
