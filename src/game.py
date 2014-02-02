@@ -1,45 +1,46 @@
 import ctypes
-import sdl2
+from sdl2 import *
 
-SCREEN_WIDTH = 640
-SCREEN_HEIGHT = 480
+from graphics import Graphics
+from sprite import Sprite
+
 FPS = 60
 
 class Game:
     def __init__(self):
-        sdl2.SDL_Init(sdl2.SDL_INIT_EVERYTHING)
-        sdl2.SDL_SetRelativeMouseMode(True)
-        self.window = sdl2.SDL_CreateWindow(b'',
-                                            sdl2.SDL_WINDOWPOS_UNDEFINED,
-                                            sdl2.SDL_WINDOWPOS_UNDEFINED,
-                                            SCREEN_WIDTH,
-                                            SCREEN_HEIGHT,
-                                            sdl2.SDL_WINDOW_SHOWN)
+        SDL_Init(SDL_INIT_EVERYTHING)
+        SDL_SetRelativeMouseMode(True)
 
     def cleanUp(self):
-        sdl2.SDL_DestroyWindow(self.window)
-        sdl2.SDL_Quit()
+        SDL_Quit()
 
     def eventLoop(self):
-        running = True
-        event = sdl2.SDL_Event()
+        graphics = Graphics()
+        event = SDL_Event()
 
+        self.sprite = Sprite(b'content/MyChar.bmp', 0, 0, 32, 32)
+
+        running = True
         while running:
-            startTime = sdl2.SDL_GetTicks()
-            while sdl2.SDL_PollEvent(ctypes.byref(event)):
-                if event.type == sdl2.SDL_KEYDOWN:
-                    if event.key.keysym.sym == sdl2.SDLK_ESCAPE:
+            startTime = SDL_GetTicks()
+            while SDL_PollEvent(ctypes.byref(event)):
+                if event.type == SDL_KEYDOWN:
+                    if event.key.keysym.sym == SDLK_ESCAPE:
                         running = False
 
             self.update()
-            self.draw()
+            self.draw(graphics)
 
             # This loop lasts 1/60th of a second, or 1000/60th ms
-            elapsedTime = sdl2.SDL_GetTicks() - startTime
-            sdl2.SDL_Delay((1000 // FPS) - elapsedTime)
+            elapsedTime = SDL_GetTicks() - startTime
+            SDL_Delay((1000 // FPS) - elapsedTime)
+
+        self.sprite.cleanUp()
+        graphics.cleanUp()
 
     def update(self):
         pass
 
-    def draw(self):
-        pass
+    def draw(self, graphics):
+        self.sprite.draw(graphics, 320, 240)
+        graphics.flip()
