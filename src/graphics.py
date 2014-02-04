@@ -20,5 +20,9 @@ class Graphics:
         SDL_BlitSurface(source, sourceRectangle, windowSurface,
                         destinationRectangle)
 
+    def clear(self):
+        windowSurface = SDL_GetWindowSurface(self.window)
+        SDL_FillRect(windowSurface, None, 0)
+
     def flip(self):
         SDL_UpdateWindowSurface(self.window)

@@ -1,9 +1,9 @@
 import ctypes
 from sdl2 import *
 
-from animated_sprite import AnimatedSprite
 from graphics import Graphics
 from input import Input
+from player import Player
 from sprite import Sprite
 
 FPS = 60
@@ -22,8 +22,7 @@ class Game:
         input = Input()
         event = SDL_Event()
 
-        self.sprite = AnimatedSprite(b'content/MyChar.bmp', 0, 0,
-                                     TILE_SIZE, TILE_SIZE, 15, 3)
+        self.player = Player(320, 240)
 
         running = True
         lastUpdateTime = SDL_GetTicks()
@@ -39,6 +38,15 @@ class Game:
             if input.wasKeyPressed(SDLK_ESCAPE):
                 running = False
 
+            if input.isKeyHeld(SDLK_LEFT) and input.isKeyHeld(SDLK_RIGHT):
+                self.player.stopMoving()
+            elif input.isKeyHeld(SDLK_LEFT):
+                self.player.startMovingLeft()
+            elif input.isKeyHeld(SDLK_RIGHT):
+                self.player.startMovingRight()
+            else:
+                self.player.stopMoving()
+
             currentTime = SDL_GetTicks()
             self.update(currentTime - lastUpdateTime)
             lastUpdateTime = currentTime
@@ -49,12 +57,13 @@ class Game:
             elapsedTime = SDL_GetTicks() - startTime
             SDL_Delay((1000 // FPS) - elapsedTime)
 
-        self.sprite.cleanUp()
+        self.player.cleanUp()
         graphics.cleanUp()
 
     def update(self, elapsedTime):
-        self.sprite.update(elapsedTime)
+        self.player.update(elapsedTime)
 
     def draw(self, graphics):
-        self.sprite.draw(graphics, 320, 240)
+        graphics.clear()
+        self.player.draw(graphics)
         graphics.flip()
