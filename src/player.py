@@ -6,12 +6,12 @@ WALKING_ACCELERATION = 0.0012 # (pixels / ms) / ms
 MAX_SPEED_X = 0.325 # pixels / ms
 
 class Player:
-    def __init__(self, x, y):
+    def __init__(self, graphics, x, y):
         self.x = x
         self.y = y
         self.velocityX = 0.0
         self.accelerationX = 0.0
-        self.sprite = AnimatedSprite(b'content/MyChar.bmp', 0, 0,
+        self.sprite = AnimatedSprite(graphics, b'content/MyChar.bmp', 0, 0,
                                      game.TILE_SIZE, game.TILE_SIZE, 15, 3)
 
     def update(self, elapsedTime):

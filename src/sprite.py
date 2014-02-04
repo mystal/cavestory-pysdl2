@@ -1,8 +1,8 @@
 from sdl2 import *
 
 class Sprite:
-    def __init__(self, filePath, sourceX, sourceY, width, height):
-        self.spriteSheet = SDL_LoadBMP(filePath)
+    def __init__(self, graphics, filePath, sourceX, sourceY, width, height):
+        self.spriteSheet = graphics.loadImage(filePath)
         self.sourceRect = SDL_Rect()
         self.sourceRect.x = sourceX
         self.sourceRect.y = sourceY

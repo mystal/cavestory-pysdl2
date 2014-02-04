@@ -1,9 +1,9 @@
 from sprite import Sprite
 
 class AnimatedSprite(Sprite):
-    def __init__(self, filePath, sourceX, sourceY, width, height,
+    def __init__(self, graphics, filePath, sourceX, sourceY, width, height,
                  fps, numFrames):
-        super().__init__(filePath, sourceX, sourceY, width, height)
+        super().__init__(graphics, filePath, sourceX, sourceY, width, height)
         self.frameTime = 1000 // fps
         self.numFrames = numFrames
         self.currentFrame = 0

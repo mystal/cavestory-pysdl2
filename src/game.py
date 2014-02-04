@@ -22,7 +22,7 @@ class Game:
         input = Input()
         event = SDL_Event()
 
-        self.player = Player(320, 240)
+        self.player = Player(graphics, 320, 240)
 
         running = True
         lastUpdateTime = SDL_GetTicks()

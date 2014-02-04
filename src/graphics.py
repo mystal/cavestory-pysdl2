@@ -12,8 +12,17 @@ class Graphics:
                                        SCREEN_HEIGHT,
                                        SDL_WINDOW_SHOWN)
 
+        self.spriteSheets = {}
+
     def cleanUp(self):
         SDL_DestroyWindow(self.window)
+
+    def loadImage(self, filePath):
+        spriteSheet = self.spriteSheets.get(filePath)
+        if not spriteSheet:
+            spriteSheet = SDL_LoadBMP(filePath)
+            self.spriteSheets[filePath] = spriteSheet
+        return spriteSheet
 
     def blitSurface(self, source, sourceRectangle, destinationRectangle):
         windowSurface = SDL_GetWindowSurface(self.window)
