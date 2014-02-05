@@ -57,7 +57,6 @@ class Game:
             elapsedTime = SDL_GetTicks() - startTime
             SDL_Delay((1000 // FPS) - elapsedTime)
 
-        self.player.cleanUp()
         graphics.cleanUp()
 
     def update(self, elapsedTime):

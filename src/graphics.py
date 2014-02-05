@@ -16,6 +16,8 @@ class Graphics:
 
     def cleanUp(self):
         SDL_DestroyWindow(self.window)
+        for spriteSheet in self.spriteSheets.values():
+            SDL_FreeSurface(spriteSheet)
 
     def loadImage(self, filePath):
         spriteSheet = self.spriteSheets.get(filePath)

@@ -38,6 +38,3 @@ class Player:
 
     def stopMoving(self):
         self.accelerationX = 0
-
-    def cleanUp(self):
-        self.sprite.cleanUp()

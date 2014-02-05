@@ -9,9 +9,6 @@ class Sprite:
         self.sourceRect.w = width
         self.sourceRect.h = height
 
-    def cleanUp(self):
-        SDL_FreeSurface(self.spriteSheet)
-
     def update(self, elapsedTime):
         pass
 
