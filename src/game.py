@@ -38,6 +38,7 @@ class Game:
             if input.wasKeyPressed(SDLK_ESCAPE):
                 running = False
 
+            # Player horizontal movement
             if input.isKeyHeld(SDLK_LEFT) and input.isKeyHeld(SDLK_RIGHT):
                 self.player.stopMoving()
             elif input.isKeyHeld(SDLK_LEFT):
@@ -46,6 +47,12 @@ class Game:
                 self.player.startMovingRight()
             else:
                 self.player.stopMoving()
+
+            # Player jump
+            if input.wasKeyPressed(SDLK_z):
+                self.player.startJump()
+            elif input.wasKeyReleased(SDLK_z):
+                self.player.stopJump()
 
             currentTime = SDL_GetTicks()
             self.update(currentTime - lastUpdateTime)
