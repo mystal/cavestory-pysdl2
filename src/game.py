@@ -12,7 +12,6 @@ TILE_SIZE = 32
 class Game:
     def __init__(self):
         SDL_Init(SDL_INIT_EVERYTHING)
-        SDL_SetRelativeMouseMode(True)
 
     def cleanUp(self):
         SDL_Quit()
@@ -71,8 +70,10 @@ class Game:
             self.draw(graphics)
 
             # This loop lasts 1/60th of a second, or 1000/60th ms
+            msPerFrame = 1000 // FPS
             elapsedTime = SDL_GetTicks() - startTime
-            SDL_Delay((1000 // FPS) - elapsedTime)
+            if elapsedTime < msPerFrame:
+                SDL_Delay(msPerFrame - elapsedTime)
 
         graphics.cleanUp()
 

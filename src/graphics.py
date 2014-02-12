@@ -11,6 +11,7 @@ class Graphics:
                                        SCREEN_WIDTH,
                                        SCREEN_HEIGHT,
                                        SDL_WINDOW_SHOWN)
+        SDL_SetRelativeMouseMode(True)
 
         self.spriteSheets = {}
 
