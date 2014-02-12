@@ -48,6 +48,16 @@ class Game:
             else:
                 self.player.stopMoving()
 
+            # Player look
+            if input.isKeyHeld(SDLK_UP) and input.isKeyHeld(SDLK_DOWN):
+                self.player.lookHorizontal()
+            elif input.isKeyHeld(SDLK_UP):
+                self.player.lookUp()
+            elif input.isKeyHeld(SDLK_DOWN):
+                self.player.lookDown()
+            else:
+                self.player.lookHorizontal()
+
             # Player jump
             if input.wasKeyPressed(SDLK_z):
                 self.player.startJump()

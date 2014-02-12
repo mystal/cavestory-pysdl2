@@ -4,28 +4,64 @@ from animated_sprite import AnimatedSprite
 import game
 from sprite import Sprite
 
+# Walk Motion
 SLOWDOWN_FACTOR = 0.8
 WALKING_ACCELERATION = 0.0012 # (pixels / ms) / ms
 MAX_SPEED_X = 0.325 # pixels / ms
 
+# Fall Motion
 GRAVITY = 0.0012 # (pixels / ms) / ms
-JUMP_SPEED = 0.325 # pixels / ms
 MAX_SPEED_Y = 0.325 # pixels / ms
+
+# Jump Motion
+JUMP_SPEED = 0.325 # pixels / ms
 JUMP_TIME = 275 # ms
+
+# Sprites
+SPRITE_FILE_PATH = b'content/MyChar.bmp'
+
+# Sprite Frames
+CHARACTER_FRAME = 0 # Which Quote "costume" to use
+
+WALK_FRAME = 0
+STAND_FRAME = 0
+JUMP_FRAME = 1
+FALL_FRAME = 2
+UP_FRAME_OFFSET = 3
+DOWN_FRAME = 6
+BACK_FRAME = 7
+
+# Walk Animation
+NUM_WALK_FRAMES = 3
+WALK_FPS = 15
 
 class MotionType:
     STANDING = 0
     WALKING = 1
+    JUMPING = 2
+    FALLING = 3
+    COUNT = 4
 
 class HorizontalFacing:
     LEFT = 0
     RIGHT = 1
+    COUNT = 2
+
+class VerticalFacing:
+    UP = 0
+    DOWN = 1
+    HORIZONTAL = 2
+    COUNT = 3
 
 class SpriteState(namedtuple('SpriteState',
-                             ['motionType', 'horizontalFacing'])):
+                             ['motionType',
+                              'horizontalFacing',
+                              'verticalFacing'])):
     def __new__(cls, motionType=MotionType.STANDING,
-                 horizontalFacing=HorizontalFacing.LEFT):
-        return super().__new__(cls, motionType, horizontalFacing)
+                horizontalFacing=HorizontalFacing.LEFT,
+                verticalFacing=VerticalFacing.HORIZONTAL):
+        return super().__new__(
+                cls, motionType, horizontalFacing, verticalFacing)
 
 class Jump:
     def __init__(self):
@@ -57,6 +93,7 @@ class Player:
         self.accelerationX = 0.0
 
         self.horizontalFacing = HorizontalFacing.LEFT
+        self.verticalFacing = VerticalFacing.HORIZONTAL
         self._onGround = False
 
         self.jump = Jump()
@@ -65,32 +102,56 @@ class Player:
         self.initializeSprites(graphics)
 
     def initializeSprites(self, graphics):
-        spriteState = SpriteState(MotionType.STANDING,
-                                  HorizontalFacing.LEFT)
-        self.sprites[spriteState] = Sprite(
-                graphics, b'content/MyChar.bmp', 0, 0, game.TILE_SIZE,
-                game.TILE_SIZE)
-        spriteState = SpriteState(MotionType.WALKING,
-                                  HorizontalFacing.LEFT)
-        self.sprites[spriteState] = AnimatedSprite(
-                graphics, b'content/MyChar.bmp', 0, 0, game.TILE_SIZE,
-                game.TILE_SIZE, 15, 3)
+        for motionType in range(MotionType.COUNT):
+            for horizontalFacing in range(HorizontalFacing.COUNT):
+                for verticalFacing in range(VerticalFacing.COUNT):
+                    spriteState = SpriteState(motionType,
+                                              horizontalFacing,
+                                              verticalFacing)
+                    self.initializeSprite(graphics, spriteState)
 
-        spriteState = SpriteState(MotionType.STANDING,
-                                  HorizontalFacing.RIGHT)
-        self.sprites[spriteState] = Sprite(
-                graphics, b'content/MyChar.bmp', 0, game.TILE_SIZE, game.TILE_SIZE,
-                game.TILE_SIZE)
-        spriteState = SpriteState(MotionType.WALKING,
-                                  HorizontalFacing.RIGHT)
-        self.sprites[spriteState] = AnimatedSprite(
-                graphics, b'content/MyChar.bmp', 0, game.TILE_SIZE, game.TILE_SIZE,
-                game.TILE_SIZE, 15, 3)
+    def initializeSprite(self, graphics, spriteState):
+        if spriteState.horizontalFacing == HorizontalFacing.LEFT:
+            sourceY = CHARACTER_FRAME * game.TILE_SIZE
+        else:
+            sourceY = (CHARACTER_FRAME + 1) * game.TILE_SIZE
+
+        if spriteState.motionType == MotionType.WALKING:
+            sourceX = WALK_FRAME * game.TILE_SIZE
+        elif spriteState.motionType == MotionType.STANDING:
+            sourceX = STAND_FRAME * game.TILE_SIZE
+        elif spriteState.motionType == MotionType.JUMPING:
+            sourceX = JUMP_FRAME * game.TILE_SIZE
+        elif spriteState.motionType == MotionType.FALLING:
+            sourceX = FALL_FRAME * game.TILE_SIZE
+        else:
+            # TODO: error!
+            pass
+
+        if spriteState.verticalFacing == VerticalFacing.UP:
+            sourceX += UP_FRAME_OFFSET * game.TILE_SIZE
+
+        if spriteState.motionType == MotionType.WALKING:
+            self.sprites[spriteState] = AnimatedSprite(
+                graphics, SPRITE_FILE_PATH, sourceX, sourceY,
+                game.TILE_SIZE, game.TILE_SIZE, WALK_FPS, NUM_WALK_FRAMES)
+        else:
+            if spriteState.verticalFacing == VerticalFacing.DOWN:
+                if spriteState.motionType == MotionType.STANDING:
+                    sourceX = BACK_FRAME * game.TILE_SIZE
+                else:
+                    sourceX = DOWN_FRAME * game.TILE_SIZE
+            self.sprites[spriteState] = Sprite(
+                graphics, SPRITE_FILE_PATH, sourceX, sourceY,
+                game.TILE_SIZE, game.TILE_SIZE)
 
     def getSpriteState(self):
-        return SpriteState(MotionType.STANDING if self.accelerationX == 0
-                           else MotionType.WALKING,
-                           self.horizontalFacing)
+        motion = None
+        if self.onGround():
+            motion = MotionType.STANDING if self.accelerationX == 0 else MotionType.WALKING
+        else:
+            motion = MotionType.JUMPING if self.velocityY < 0 else MotionType.FALLING
+        return SpriteState(motion, self.horizontalFacing, self.verticalFacing)
 
     def update(self, elapsedTime):
         self.sprites[self.getSpriteState()].update(elapsedTime)
@@ -130,6 +191,15 @@ class Player:
 
     def stopMoving(self):
         self.accelerationX = 0
+
+    def lookUp(self):
+        self.verticalFacing = VerticalFacing.UP
+
+    def lookDown(self):
+        self.verticalFacing = VerticalFacing.DOWN
+
+    def lookHorizontal(self):
+        self.verticalFacing = VerticalFacing.HORIZONTAL
 
     def startJump(self):
         if self.onGround():
