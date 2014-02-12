@@ -5,7 +5,7 @@ SCREEN_HEIGHT = 480
 
 class Graphics:
     def __init__(self):
-        self.window = SDL_CreateWindow(b'',
+        self.window = SDL_CreateWindow(b'My Cave Story',
                                        SDL_WINDOWPOS_UNDEFINED,
                                        SDL_WINDOWPOS_UNDEFINED,
                                        SCREEN_WIDTH,

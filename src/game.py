@@ -3,6 +3,7 @@ from sdl2 import *
 
 from graphics import Graphics
 from input import Input
+from map import Map
 from player import Player
 from sprite import Sprite
 
@@ -22,6 +23,7 @@ class Game:
         event = SDL_Event()
 
         self.player = Player(graphics, 320, 240)
+        self.map = Map.createTestMap(graphics)
 
         running = True
         lastUpdateTime = SDL_GetTicks()
@@ -79,8 +81,10 @@ class Game:
 
     def update(self, elapsedTime):
         self.player.update(elapsedTime)
+        self.map.update(elapsedTime)
 
     def draw(self, graphics):
         graphics.clear()
         self.player.draw(graphics)
+        self.map.draw(graphics)
         graphics.flip()
