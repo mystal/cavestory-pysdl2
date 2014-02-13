@@ -2,6 +2,7 @@ from collections import namedtuple
 
 from animated_sprite import AnimatedSprite
 import game
+from rectangle import Rectangle
 from sprite import Sprite
 
 # Walk Motion
@@ -34,6 +35,10 @@ BACK_FRAME = 7
 # Walk Animation
 NUM_WALK_FRAMES = 3
 WALK_FPS = 15
+
+# Collision Rectangle
+COLLISION_X = Rectangle(6, 10, 20, 12)
+COLLISION_Y = Rectangle(10, 2, 12, 30)
 
 class MotionType:
     STANDING = 0
@@ -153,7 +158,35 @@ class Player:
             motion = MotionType.JUMPING if self.velocityY < 0 else MotionType.FALLING
         return SpriteState(motion, self.horizontalFacing, self.verticalFacing)
 
-    def update(self, elapsedTime):
+    def leftCollision(self, delta):
+        assert delta <= 0
+        return Rectangle(self.x + COLLISION_X.left() + delta,
+                         self.y + COLLISION_X.top(),
+                         COLLISION_X.width // 2 - delta,
+                         COLLISION_X.height)
+
+    def rightCollision(self, delta):
+        assert delta >= 0
+        return Rectangle(self.x + COLLISION_X.left() + COLLISION_X.width // 2,
+                         self.y + COLLISION_X.top(),
+                         COLLISION_X.width // 2 + delta,
+                         COLLISION_X.height)
+
+    def topCollision(self, delta):
+        assert delta <= 0
+        return Rectangle(self.x + COLLISION_Y.left(),
+                         self.y + COLLISION_Y.top() + delta,
+                         COLLISION_Y.width,
+                         COLLISION_Y.height // 2 - delta)
+
+    def bottomCollision(self, delta):
+        assert delta >= 0
+        return Rectangle(self.x + COLLISION_Y.left(),
+                         self.y + COLLISION_Y.top() + COLLISION_Y.height // 2,
+                         COLLISION_Y.width,
+                         COLLISION_Y.height // 2 + delta)
+
+    def update(self, elapsedTime, map):
         self.sprites[self.getSpriteState()].update(elapsedTime)
         self.jump.update(elapsedTime)
 

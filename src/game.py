@@ -80,7 +80,7 @@ class Game:
         graphics.cleanUp()
 
     def update(self, elapsedTime):
-        self.player.update(elapsedTime)
+        self.player.update(elapsedTime, self.map)
         self.map.update(elapsedTime)
 
     def draw(self, graphics):
