@@ -2,6 +2,7 @@ from collections import namedtuple
 
 from animated_sprite import AnimatedSprite
 import game
+from map import TileType
 from rectangle import Rectangle
 from sprite import Sprite
 
@@ -57,6 +58,20 @@ class VerticalFacing:
     DOWN = 1
     HORIZONTAL = 2
     COUNT = 3
+
+def getWallCollisionInfo(map, rectangle):
+    collided = False
+    row = col = 0
+
+    tiles = map.getCollidingTiles(rectangle)
+    for tile in tiles:
+        if tile.tileType == TileType.WALL_TILE:
+            collided = True
+            row = tile.row
+            col = tile.col
+            break
+
+    return (collided, row, col)
 
 class SpriteState(namedtuple('SpriteState',
                              ['motionType',
@@ -190,9 +205,12 @@ class Player:
         self.sprites[self.getSpriteState()].update(elapsedTime)
         self.jump.update(elapsedTime)
 
-        self.x += round(self.velocityX * elapsedTime)
-        self.velocityX += self.accelerationX * elapsedTime
+        self.updateX(elapsedTime, map)
+        self.updateY(elapsedTime, map)
 
+    def updateX(self, elapsedTime, map):
+        # Update Velocity
+        self.velocityX += self.accelerationX * elapsedTime
         if self.accelerationX > 0:
             self.velocityX = max(self.velocityX, -MAX_SPEED_X)
         elif self.accelerationX < 0:
@@ -200,16 +218,85 @@ class Player:
         elif self._onGround:
             self.velocityX *= SLOWDOWN_FACTOR
 
-        self.y += round(self.velocityY * elapsedTime)
+        # Calculate Delta
+        delta = round(self.velocityX * elapsedTime)
+        if delta > 0:
+            # Check collision in the direction of delta
+            collided, row, col = getWallCollisionInfo(
+                    map, self.rightCollision(delta))
+            # React to collision
+            if collided:
+                self.x = col * game.TILE_SIZE - COLLISION_X.right()
+                self.velocityX = 0
+            else:
+                self.x += delta
+
+            # Check collision in other direction
+            collided, row, col = getWallCollisionInfo(
+                    map, self.leftCollision(0))
+            if collided:
+                self.x = col * game.TILE_SIZE + COLLISION_X.right()
+        else:
+            # Check collision in the direction of delta
+            collided, row, col = getWallCollisionInfo(
+                    map, self.leftCollision(delta))
+            # React to collision
+            if collided:
+                self.x = col * game.TILE_SIZE + COLLISION_X.right()
+                self.velocityX = 0
+            else:
+                self.x += delta
+
+            # Check collision in other direction
+            collided, row, col = getWallCollisionInfo(
+                    map, self.rightCollision(0))
+            if collided:
+                self.x = col * game.TILE_SIZE - COLLISION_X.right()
+
+    def updateY(self, elapsedTime, map):
+        # Update Velocity
         if not self.jump.active:
             self.velocityY += GRAVITY * elapsedTime
             self.velocityY = min(self.velocityY, MAX_SPEED_Y)
 
-        # TODO: remove this hack
-        if self.y >= 320:
-            self.y = 320
-            self.velocityY = 0.0
-        self._onGround = self.y == 320
+        # Calculate Delta
+        delta = round(self.velocityY * elapsedTime)
+        if delta > 0:
+            # Check collision in the direction of delta
+            collided, row, col = getWallCollisionInfo(
+                    map, self.bottomCollision(delta))
+            # React to collision
+            if collided:
+                self.y = row * game.TILE_SIZE - COLLISION_Y.bottom()
+                self.velocityY = 0
+                self._onGround = True
+            else:
+                self.y += delta
+                self._onGround = False
+
+            # Check collision in other direction
+            collided, row, col = getWallCollisionInfo(
+                    map, self.topCollision(0))
+            if collided:
+                self.y = row * game.TILE_SIZE + COLLISION_Y.height
+        else:
+            # Check collision in the direction of delta
+            collided, row, col = getWallCollisionInfo(
+                    map, self.topCollision(delta))
+            # React to collision
+            if collided:
+                self.y = row * game.TILE_SIZE + COLLISION_Y.height
+                self.velocityY = 0
+            else:
+                self.y += delta
+                self._onGround = False
+
+            # Check collision in other direction
+            collided, row, col = getWallCollisionInfo(
+                    map, self.bottomCollision(0))
+            if collided:
+                self.y = row * game.TILE_SIZE - COLLISION_Y.bottom()
+                self._onGround = True
 
     def draw(self, graphics):
         self.sprites[self.getSpriteState()].draw(graphics, self.x, self.y)
