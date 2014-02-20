@@ -211,9 +211,9 @@ class Player:
     def updateX(self, elapsedTime, map):
         # Update Velocity
         self.velocityX += self.accelerationX * elapsedTime
-        if self.accelerationX > 0:
+        if self.accelerationX < 0:
             self.velocityX = max(self.velocityX, -MAX_SPEED_X)
-        elif self.accelerationX < 0:
+        elif self.accelerationX > 0:
             self.velocityX = min(self.velocityX, MAX_SPEED_X)
         elif self._onGround:
             self.velocityX *= SLOWDOWN_FACTOR
