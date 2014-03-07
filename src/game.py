@@ -85,6 +85,7 @@ class Game:
 
     def draw(self, graphics):
         graphics.clear()
+        self.map.drawBackground(graphics)
         self.player.draw(graphics)
         self.map.draw(graphics)
         graphics.flip()

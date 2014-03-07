@@ -2,7 +2,7 @@ from sdl2 import *
 
 class Sprite:
     def __init__(self, graphics, filePath, sourceX, sourceY, width, height):
-        self.spriteSheet = graphics.loadImage(filePath)
+        self.spriteSheet = graphics.loadImage(filePath, blackIsTransparent=True)
         self.sourceRect = SDL_Rect()
         self.sourceRect.x = sourceX
         self.sourceRect.y = sourceY

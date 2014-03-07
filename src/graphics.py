@@ -20,11 +20,13 @@ class Graphics:
         for spriteSheet in self.spriteSheets.values():
             SDL_FreeSurface(spriteSheet)
 
-    def loadImage(self, filePath):
+    def loadImage(self, filePath, blackIsTransparent=False):
         spriteSheet = self.spriteSheets.get(filePath)
         if not spriteSheet:
             spriteSheet = SDL_LoadBMP(filePath)
             self.spriteSheets[filePath] = spriteSheet
+            if blackIsTransparent:
+                SDL_SetColorKey(spriteSheet, SDL_TRUE, 0)
         return spriteSheet
 
     def blitSurface(self, source, sourceRectangle, destinationRectangle):

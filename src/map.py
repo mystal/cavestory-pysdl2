@@ -1,3 +1,4 @@
+import backdrop
 import game
 from sprite import Sprite
 
@@ -20,10 +21,13 @@ class CollisionTile:
 class Map:
     def __init__(self):
         self.tiles = []
+        self.backdrop = None
 
     @staticmethod
     def createTestMap(graphics):
         ret = Map()
+
+        ret.backdrop = backdrop.FixedBackdrop(b'content/bkBlue.bmp', graphics)
 
         numRows = 15 # 15 * 32 = 480
         numCols = 20 # 20 * 32 = 640
@@ -65,6 +69,9 @@ class Map:
             for col in range(len(self.tiles[row])):
                 if self.tiles[row][col].sprite:
                     self.tiles[row][col].sprite.update(elapsedTime)
+
+    def drawBackground(self, graphics):
+        self.backdrop.draw(graphics)
 
     def draw(self, graphics):
         for row in range(len(self.tiles)):
