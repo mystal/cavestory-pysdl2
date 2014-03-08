@@ -16,4 +16,6 @@ class Sprite:
         destinationRect = SDL_Rect()
         destinationRect.x = x
         destinationRect.y = y
+        destinationRect.w = self.sourceRect.w
+        destinationRect.h = self.sourceRect.h
         graphics.blitSurface(self.spriteSheet, self.sourceRect, destinationRect)

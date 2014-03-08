@@ -5,38 +5,39 @@ SCREEN_HEIGHT = 480
 
 class Graphics:
     def __init__(self):
-        self.window = SDL_CreateWindow(b'My Cave Story',
+        self.window = SDL_CreateWindow(b'cavestory-pysdl2',
                                        SDL_WINDOWPOS_UNDEFINED,
                                        SDL_WINDOWPOS_UNDEFINED,
                                        SCREEN_WIDTH,
                                        SCREEN_HEIGHT,
                                        SDL_WINDOW_SHOWN)
+        self.renderer = SDL_CreateRenderer(self.window, -1, 0)
         SDL_SetRelativeMouseMode(True)
 
         self.spriteSheets = {}
 
     def cleanUp(self):
-        SDL_DestroyWindow(self.window)
         for spriteSheet in self.spriteSheets.values():
-            SDL_FreeSurface(spriteSheet)
+            SDL_DestroyTexture(spriteSheet)
+        SDL_DestroyRenderer(self.renderer)
+        SDL_DestroyWindow(self.window)
 
     def loadImage(self, filePath, blackIsTransparent=False):
         spriteSheet = self.spriteSheets.get(filePath)
         if not spriteSheet:
-            spriteSheet = SDL_LoadBMP(filePath)
-            self.spriteSheets[filePath] = spriteSheet
+            surface = SDL_LoadBMP(filePath)
             if blackIsTransparent:
-                SDL_SetColorKey(spriteSheet, SDL_TRUE, 0)
+                SDL_SetColorKey(surface, SDL_TRUE, 0)
+            spriteSheet = SDL_CreateTextureFromSurface(self.renderer, surface)
+            self.spriteSheets[filePath] = spriteSheet
+            SDL_FreeSurface(surface)
         return spriteSheet
 
-    def blitSurface(self, source, sourceRectangle, destinationRectangle):
-        windowSurface = SDL_GetWindowSurface(self.window)
-        SDL_BlitSurface(source, sourceRectangle, windowSurface,
-                        destinationRectangle)
+    def blitSurface(self, source, srcRect, dstRect):
+        SDL_RenderCopy(self.renderer, source, srcRect, dstRect)
 
     def clear(self):
-        windowSurface = SDL_GetWindowSurface(self.window)
-        SDL_FillRect(windowSurface, None, 0)
+        SDL_RenderClear(self.renderer)
 
     def flip(self):
-        SDL_UpdateWindowSurface(self.window)
+        SDL_RenderPresent(self.renderer)

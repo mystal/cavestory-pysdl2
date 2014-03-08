@@ -18,4 +18,5 @@ class FixedBackdrop(Backdrop):
             for y in range(0, SCREEN_HEIGHT, BACKGROUND_SIZE):
                 destRect.x = x
                 destRect.y = y
+                destRect.w = destRect.h = BACKGROUND_SIZE
                 graphics.blitSurface(self.surfaceId, None, destRect)
