@@ -1,23 +1,23 @@
 from collections import namedtuple
 
-from graphics import gameUnitsToPixels, TILE_SIZE
 from map import TileType
 from rectangle import Rectangle
 from sprite import Sprite, AnimatedSprite
+import units
 
 # Walk Motion
-WALKING_ACCELERATION = gameUnitsToPixels(0.00083007812) # (pixels / ms) / ms
-MAX_SPEED_X = gameUnitsToPixels(0.15859375) # pixels / ms
-FRICTION = gameUnitsToPixels(0.00049804687) # (pixels / ms) / ms
+WALKING_ACCELERATION = 0.00083007812 # units.Acceleration
+MAX_SPEED_X = 0.15859375 # units.Velocity
+FRICTION = 0.00049804687 # units.Acceleration
 
 # Fall Motion
-GRAVITY = gameUnitsToPixels(0.00078125) # (pixels / ms) / ms
-MAX_SPEED_Y = gameUnitsToPixels(0.2998046875) # pixels / ms
+GRAVITY = 0.00078125 # units.Acceleration
+MAX_SPEED_Y = 0.2998046875 # units.Velocity
 
 # Jump Motion
-JUMP_SPEED = gameUnitsToPixels(0.25) # pixels / ms
-AIR_ACCELERATION = gameUnitsToPixels(0.0003125) # (pixels / ms) / ms
-JUMP_GRAVITY = gameUnitsToPixels(0.0003125) # (pixels / ms) / ms
+JUMP_SPEED = 0.25 # units.Velocity
+AIR_ACCELERATION = 0.0003125 # units.Acceleration
+JUMP_GRAVITY = 0.0003125 # units.Acceleration
 
 # Sprites
 SPRITE_FILE_PATH = b'assets/MyChar.bmp'
@@ -25,27 +25,21 @@ SPRITE_FILE_PATH = b'assets/MyChar.bmp'
 # Sprite Frames
 CHARACTER_FRAME = 0 # Which Quote "costume" to use
 
-WALK_FRAME = 0
-STAND_FRAME = 0
-JUMP_FRAME = 1
-FALL_FRAME = 2
-UP_FRAME_OFFSET = 3
-DOWN_FRAME = 6
-BACK_FRAME = 7
+WALK_FRAME = 0 # units.Frame
+STAND_FRAME = 0 # units.Frame
+JUMP_FRAME = 1 # units.Frame
+FALL_FRAME = 2 # units.Frame
+UP_FRAME_OFFSET = 3 # units.Frame
+DOWN_FRAME = 6 # units.Frame
+BACK_FRAME = 7 # units.Frame
 
 # Walk Animation
-NUM_WALK_FRAMES = 3
-WALK_FPS = 15
+NUM_WALK_FRAMES = 3 # units.Frame
+WALK_FPS = 15 # units.FPS
 
 # Collision Rectangle
-COLLISION_X = Rectangle(int(gameUnitsToPixels(6)),
-                        int(gameUnitsToPixels(10)),
-                        int(gameUnitsToPixels(20)),
-                        int(gameUnitsToPixels(12)))
-COLLISION_Y = Rectangle(int(gameUnitsToPixels(10)),
-                        int(gameUnitsToPixels(2)),
-                        int(gameUnitsToPixels(12)),
-                        int(gameUnitsToPixels(30)))
+COLLISION_X = Rectangle(6, 10, 20, 12) # units.Game
+COLLISION_Y = Rectangle(10, 2, 12, 30) # units.Game
 
 class MotionType:
     STANDING = 0
@@ -74,8 +68,8 @@ def getWallCollisionInfo(map, rectangle):
     for tile in tiles:
         if tile.tileType == TileType.WALL_TILE:
             collided = True
-            row = tile.row
-            col = tile.col
+            row = tile.row # units.Tile
+            col = tile.col # units.Tile
             break
 
     return (collided, row, col)
@@ -92,10 +86,10 @@ class SpriteState(namedtuple('SpriteState',
 
 class Player:
     def __init__(self, graphics, x, y):
-        self.x = x
-        self.y = y
-        self.velocityX = 0.0
-        self.velocityY = 0.0
+        self.x = x # units.Game
+        self.y = y # units.Game
+        self.velocityX = 0.0 # units.Velocity
+        self.velocityY = 0.0 # units.Velocity
         self.accelerationX = 0
 
         self.horizontalFacing = HorizontalFacing.LEFT
@@ -119,38 +113,41 @@ class Player:
 
     def initializeSprite(self, graphics, spriteState):
         if spriteState.horizontalFacing == HorizontalFacing.LEFT:
-            sourceY = CHARACTER_FRAME * TILE_SIZE
+            tileY = CHARACTER_FRAME
         else:
-            sourceY = (CHARACTER_FRAME + 1) * TILE_SIZE
+            tileY = (CHARACTER_FRAME + 1)
 
         if spriteState.motionType == MotionType.WALKING:
-            sourceX = WALK_FRAME * TILE_SIZE
+            tileX = WALK_FRAME
         elif spriteState.motionType == MotionType.STANDING:
-            sourceX = STAND_FRAME * TILE_SIZE
+            tileX = STAND_FRAME
         elif spriteState.motionType == MotionType.INTERACTING:
-            sourceX = BACK_FRAME * TILE_SIZE
+            tileX = BACK_FRAME
         elif spriteState.motionType == MotionType.JUMPING:
-            sourceX = JUMP_FRAME * TILE_SIZE
+            tileX = JUMP_FRAME
         elif spriteState.motionType == MotionType.FALLING:
-            sourceX = FALL_FRAME * TILE_SIZE
+            tileX = FALL_FRAME
         else:
             # TODO: error!
             pass
 
         if spriteState.verticalFacing == VerticalFacing.UP:
-            sourceX += UP_FRAME_OFFSET * TILE_SIZE
+            tileX += UP_FRAME_OFFSET
 
         if spriteState.motionType == MotionType.WALKING:
             self.sprites[spriteState] = AnimatedSprite(
-                graphics, SPRITE_FILE_PATH, sourceX, sourceY,
-                TILE_SIZE, TILE_SIZE, WALK_FPS, NUM_WALK_FRAMES)
+                graphics, SPRITE_FILE_PATH,
+                units.tileToPixel(tileX), units.tileToPixel(tileY),
+                units.tileToPixel(1), units.tileToPixel(1),
+                WALK_FPS, NUM_WALK_FRAMES)
         else:
             if (spriteState.verticalFacing == VerticalFacing.DOWN and
                 spriteState.motionType in (MotionType.JUMPING, MotionType.FALLING)):
-                sourceX = DOWN_FRAME * TILE_SIZE
+                tileX = DOWN_FRAME
             self.sprites[spriteState] = Sprite(
-                graphics, SPRITE_FILE_PATH, sourceX, sourceY,
-                TILE_SIZE, TILE_SIZE)
+                graphics, SPRITE_FILE_PATH,
+                units.tileToPixel(tileX), units.tileToPixel(tileY),
+                units.tileToPixel(1), units.tileToPixel(1))
 
     def getSpriteState(self):
         if self.interacting:
@@ -212,14 +209,14 @@ class Player:
                 self.velocityX = min(0.0, self.velocityX + FRICTION * elapsedTime)
 
         # Calculate Delta
-        delta = round(self.velocityX * elapsedTime)
+        delta = self.velocityX * elapsedTime # units.Game
         if delta > 0:
             # Check collision in the direction of delta
             collided, row, col = getWallCollisionInfo(
                     map, self.rightCollision(delta))
             # React to collision
             if collided:
-                self.x = col * TILE_SIZE - COLLISION_X.right()
+                self.x = units.tileToGame(col) - COLLISION_X.right()
                 self.velocityX = 0
             else:
                 self.x += delta
@@ -228,14 +225,14 @@ class Player:
             collided, row, col = getWallCollisionInfo(
                     map, self.leftCollision(0))
             if collided:
-                self.x = col * TILE_SIZE + COLLISION_X.right()
+                self.x = units.tileToGame(col) + COLLISION_X.right()
         else:
             # Check collision in the direction of delta
             collided, row, col = getWallCollisionInfo(
                     map, self.leftCollision(delta))
             # React to collision
             if collided:
-                self.x = col * TILE_SIZE + COLLISION_X.right()
+                self.x = units.tileToGame(col) + COLLISION_X.right()
                 self.velocityX = 0
             else:
                 self.x += delta
@@ -244,7 +241,7 @@ class Player:
             collided, row, col = getWallCollisionInfo(
                     map, self.rightCollision(0))
             if collided:
-                self.x = col * TILE_SIZE - COLLISION_X.right()
+                self.x = units.tileToGame(col) - COLLISION_X.right()
 
     def updateY(self, elapsedTime, map):
         # Update Velocity
@@ -254,14 +251,14 @@ class Player:
         self.velocityY = min(self.velocityY, MAX_SPEED_Y)
 
         # Calculate Delta
-        delta = round(self.velocityY * elapsedTime)
+        delta = self.velocityY * elapsedTime # units.Game
         if delta > 0:
             # Check collision in the direction of delta
             collided, row, col = getWallCollisionInfo(
                     map, self.bottomCollision(delta))
             # React to collision
             if collided:
-                self.y = row * TILE_SIZE - COLLISION_Y.bottom()
+                self.y = units.tileToGame(row) - COLLISION_Y.bottom()
                 self.velocityY = 0
                 self._onGround = True
             else:
@@ -272,14 +269,14 @@ class Player:
             collided, row, col = getWallCollisionInfo(
                     map, self.topCollision(0))
             if collided:
-                self.y = row * TILE_SIZE + COLLISION_Y.height
+                self.y = units.tileToGame(row) + COLLISION_Y.height
         else:
             # Check collision in the direction of delta
             collided, row, col = getWallCollisionInfo(
                     map, self.topCollision(delta))
             # React to collision
             if collided:
-                self.y = row * TILE_SIZE + COLLISION_Y.height
+                self.y = units.tileToGame(row) + COLLISION_Y.height
                 self.velocityY = 0
             else:
                 self.y += delta
@@ -289,7 +286,7 @@ class Player:
             collided, row, col = getWallCollisionInfo(
                     map, self.bottomCollision(0))
             if collided:
-                self.y = row * TILE_SIZE - COLLISION_Y.bottom()
+                self.y = units.tileToGame(row) - COLLISION_Y.bottom()
                 self._onGround = True
 
     def draw(self, graphics):

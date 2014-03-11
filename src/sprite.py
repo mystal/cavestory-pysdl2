@@ -1,21 +1,23 @@
 from sdl2 import *
 
+import units
+
 class Sprite:
     def __init__(self, graphics, filePath, sourceX, sourceY, width, height):
         self.spriteSheet = graphics.loadImage(filePath, blackIsTransparent=True)
         self.sourceRect = SDL_Rect()
-        self.sourceRect.x = sourceX
-        self.sourceRect.y = sourceY
-        self.sourceRect.w = width
-        self.sourceRect.h = height
+        self.sourceRect.x = sourceX # units.Pixel
+        self.sourceRect.y = sourceY # units.Pixel
+        self.sourceRect.w = width # units.Pixel
+        self.sourceRect.h = height # units.Pixel
 
     def update(self, elapsedTime):
         pass
 
-    def draw(self, graphics, x, y):
+    def draw(self, graphics, gameX, gameY):
         destinationRect = SDL_Rect()
-        destinationRect.x = x
-        destinationRect.y = y
+        destinationRect.x = units.gameToPixel(gameX)
+        destinationRect.y = units.gameToPixel(gameY)
         destinationRect.w = self.sourceRect.w
         destinationRect.h = self.sourceRect.h
         graphics.blitSurface(self.spriteSheet, self.sourceRect, destinationRect)
@@ -24,10 +26,10 @@ class AnimatedSprite(Sprite):
     def __init__(self, graphics, filePath, sourceX, sourceY, width, height,
                  fps, numFrames):
         super().__init__(graphics, filePath, sourceX, sourceY, width, height)
-        self.frameTime = 1000 // fps
-        self.numFrames = numFrames
-        self.currentFrame = 0
-        self.elapsedTime = 0 # Elapsed time since last frame change
+        self.frameTime = 1000 // fps # units.MS
+        self.numFrames = numFrames # units.Frame
+        self.currentFrame = 0 # units.Frame
+        self.elapsedTime = 0 # units.MS, Elapsed time since last frame change
 
     def update(self, elapsedTime):
         self.elapsedTime += elapsedTime

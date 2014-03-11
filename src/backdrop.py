@@ -1,8 +1,9 @@
 from sdl2 import SDL_Rect
 
-from graphics import SCREEN_WIDTH, SCREEN_HEIGHT, TILE_SIZE
+import game
+import units
 
-BACKGROUND_SIZE = TILE_SIZE * 4 # pixels
+BACKGROUND_SIZE = 4 # units.Tile
 
 class Backdrop:
     def draw(self, graphics):
@@ -14,9 +15,9 @@ class FixedBackdrop(Backdrop):
 
     def draw(self, graphics):
         destRect = SDL_Rect()
-        for x in range(0, SCREEN_WIDTH, BACKGROUND_SIZE):
-            for y in range(0, SCREEN_HEIGHT, BACKGROUND_SIZE):
-                destRect.x = x
-                destRect.y = y
-                destRect.w = destRect.h = BACKGROUND_SIZE
+        for tileX in range(0, game.SCREEN_WIDTH, BACKGROUND_SIZE):
+            for tileY in range(0, game.SCREEN_HEIGHT, BACKGROUND_SIZE):
+                destRect.x = units.tileToPixel(tileX)
+                destRect.y = units.tileToPixel(tileY)
+                destRect.w = destRect.h = units.tileToPixel(BACKGROUND_SIZE)
                 graphics.blitSurface(self.surfaceId, None, destRect)

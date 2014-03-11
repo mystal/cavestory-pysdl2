@@ -1,6 +1,6 @@
 import backdrop
-from graphics import TILE_SIZE
 from sprite import Sprite
+import units
 
 class TileType:
     AIR_TILE = 0
@@ -14,8 +14,8 @@ class Tile:
 
 class CollisionTile:
     def __init__(self, row, col, tileType):
-        self.row = row
-        self.col = col
+        self.row = row # units.Tile
+        self.col = col # units.Tile
         self.tileType = tileType
 
 class Map:
@@ -30,16 +30,16 @@ class Map:
 
         ret.backdrop = backdrop.FixedBackdrop(b'assets/bkBlue.bmp', graphics)
 
-        numRows = 15 # 15 * 32 = 480
-        numCols = 20 # 20 * 32 = 640
+        numRows = 15 # units.Tiles
+        numCols = 20 # units.Tiles
         # Ensure tiles and backgroundTiles are numRows x numCols in size
         ret.tiles = [[Tile() for _ in range(numCols)] for _ in range(numRows)]
         ret.backgroundTiles = [[None for _ in range(numCols)] for _ in range(numRows)]
 
         sprite = Sprite(graphics,
                         b'assets/PrtCave.bmp',
-                        TILE_SIZE, 0,
-                        TILE_SIZE, TILE_SIZE)
+                        units.tileToPixel(1), 0,
+                        units.tileToPixel(1), units.tileToPixel(1))
         tile = Tile(TileType.WALL_TILE, sprite)
         row = 11
         for col in range(numCols):
@@ -52,16 +52,16 @@ class Map:
 
         chainTop = Sprite(graphics,
                           b'assets/PrtCave.bmp',
-                          11*TILE_SIZE, 2*TILE_SIZE,
-                          TILE_SIZE, TILE_SIZE)
+                          units.tileToPixel(11), units.tileToPixel(2),
+                          units.tileToPixel(1), units.tileToPixel(1))
         chainMiddle = Sprite(graphics,
                              b'assets/PrtCave.bmp',
-                             12*TILE_SIZE, 2*TILE_SIZE,
-                             TILE_SIZE, TILE_SIZE)
+                             units.tileToPixel(12), units.tileToPixel(2),
+                             units.tileToPixel(1), units.tileToPixel(1))
         chainBottom = Sprite(graphics,
                              b'assets/PrtCave.bmp',
-                             13*TILE_SIZE, 2*TILE_SIZE,
-                             TILE_SIZE, TILE_SIZE)
+                             units.tileToPixel(13), units.tileToPixel(2),
+                             units.tileToPixel(1), units.tileToPixel(1))
 
         ret.backgroundTiles[8][2] = chainTop
         ret.backgroundTiles[9][2] = chainMiddle
@@ -70,10 +70,10 @@ class Map:
         return ret
 
     def getCollidingTiles(self, rectangle):
-        firstRow = rectangle.top() // TILE_SIZE
-        lastRow = rectangle.bottom() // TILE_SIZE
-        firstCol = rectangle.left() // TILE_SIZE
-        lastCol = rectangle.right() // TILE_SIZE
+        firstRow = units.gameToTile(rectangle.top())
+        lastRow = units.gameToTile(rectangle.bottom())
+        firstCol = units.gameToTile(rectangle.left())
+        lastCol = units.gameToTile(rectangle.right())
 
         collisionTiles = []
         for row in range(firstRow, lastRow + 1):
@@ -95,11 +95,11 @@ class Map:
             for col in range(len(self.backgroundTiles[row])):
                 if self.backgroundTiles[row][col]:
                     self.backgroundTiles[row][col].draw(
-                            graphics, col*TILE_SIZE, row*TILE_SIZE)
+                            graphics, units.tileToGame(col), units.tileToGame(row))
 
     def draw(self, graphics):
         for row in range(len(self.tiles)):
             for col in range(len(self.tiles[row])):
                 if self.tiles[row][col].sprite:
                     self.tiles[row][col].sprite.draw(
-                            graphics, col*TILE_SIZE, row*TILE_SIZE)
+                            graphics, units.tileToGame(col), units.tileToGame(row))

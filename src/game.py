@@ -1,13 +1,17 @@
 import ctypes
 from sdl2 import *
 
-from graphics import Graphics, SCREEN_WIDTH, SCREEN_HEIGHT
+from graphics import Graphics
 from input import Input
 from map import Map
 from player import Player
 from sprite import Sprite
+import units
 
-FPS = 60
+FPS = 60 # units.FPS
+
+SCREEN_WIDTH = 20 # units.Tile
+SCREEN_HEIGHT = 15 # units.Tile
 
 class Game:
     def __init__(self):
@@ -17,17 +21,20 @@ class Game:
         SDL_Quit()
 
     def eventLoop(self):
-        graphics = Graphics()
+        graphics = Graphics(units.tileToPixel(SCREEN_WIDTH),
+                            units.tileToPixel(SCREEN_HEIGHT))
         input = Input()
         event = SDL_Event()
 
-        self.player = Player(graphics, SCREEN_WIDTH//2, SCREEN_HEIGHT//2)
+        self.player = Player(graphics,
+                             units.tileToGame(SCREEN_WIDTH // 2),
+                             units.tileToGame(SCREEN_HEIGHT // 2))
         self.map = Map.createTestMap(graphics)
 
         running = True
-        lastUpdateTime = SDL_GetTicks()
+        lastUpdateTime = SDL_GetTicks() # units.MS
         while running:
-            startTime = SDL_GetTicks()
+            startTime = SDL_GetTicks() # units.MS
             input.beginNewFrame()
             while SDL_PollEvent(ctypes.byref(event)):
                 if event.type == SDL_KEYDOWN:
@@ -64,15 +71,15 @@ class Game:
             elif input.wasKeyReleased(SDLK_z):
                 self.player.stopJump()
 
-            currentTime = SDL_GetTicks()
+            currentTime = SDL_GetTicks() # units.MS
             self.update(currentTime - lastUpdateTime)
             lastUpdateTime = currentTime
 
             self.draw(graphics)
 
             # This loop lasts 1/60th of a second, or 1000/60th ms
-            msPerFrame = 1000 // FPS
-            elapsedTime = SDL_GetTicks() - startTime
+            msPerFrame = 1000 // FPS # units.MS
+            elapsedTime = SDL_GetTicks() - startTime # units.MS
             if elapsedTime < msPerFrame:
                 SDL_Delay(msPerFrame - elapsedTime)
 

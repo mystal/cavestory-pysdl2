@@ -1,22 +1,12 @@
 from sdl2 import *
 
-SCALE = 2.0
-
-TILE_SIZE = 16
-
-SCREEN_WIDTH = 20 * TILE_SIZE
-SCREEN_HEIGHT = 15 * TILE_SIZE
-
-def gameUnitsToPixels(unit):
-    return unit / SCALE
-
 class Graphics:
-    def __init__(self):
+    def __init__(self, screenWidth, screenHeight):
         self.window = SDL_CreateWindow(b'cavestory-pysdl2',
                                        SDL_WINDOWPOS_UNDEFINED,
                                        SDL_WINDOWPOS_UNDEFINED,
-                                       SCREEN_WIDTH,
-                                       SCREEN_HEIGHT,
+                                       screenWidth,
+                                       screenHeight,
                                        SDL_WINDOW_SHOWN)
         self.renderer = SDL_CreateRenderer(self.window, -1, 0)
         SDL_SetRelativeMouseMode(True)
