@@ -1,8 +1,8 @@
 from sdl2 import SDL_Rect
 
-from graphics import SCREEN_WIDTH, SCREEN_HEIGHT
+from graphics import SCREEN_WIDTH, SCREEN_HEIGHT, TILE_SIZE
 
-BACKGROUND_SIZE = 128 # pixels
+BACKGROUND_SIZE = TILE_SIZE * 4 # pixels
 
 class Backdrop:
     def draw(self, graphics):

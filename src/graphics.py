@@ -1,7 +1,14 @@
 from sdl2 import *
 
-SCREEN_WIDTH = 640
-SCREEN_HEIGHT = 480
+SCALE = 2.0
+
+TILE_SIZE = 16
+
+SCREEN_WIDTH = 20 * TILE_SIZE
+SCREEN_HEIGHT = 15 * TILE_SIZE
+
+def gameUnitsToPixels(unit):
+    return unit / SCALE
 
 class Graphics:
     def __init__(self):

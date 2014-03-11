@@ -1,24 +1,24 @@
 from collections import namedtuple
 
 from animated_sprite import AnimatedSprite
-import game
+from graphics import gameUnitsToPixels, TILE_SIZE
 from map import TileType
 from rectangle import Rectangle
 from sprite import Sprite
 
 # Walk Motion
-WALKING_ACCELERATION = 0.00083007812 # (pixels / ms) / ms
-MAX_SPEED_X = 0.15859375 # pixels / ms
-FRICTION = 0.00049804687 # (pixels / ms) / ms
+WALKING_ACCELERATION = gameUnitsToPixels(0.00083007812) # (pixels / ms) / ms
+MAX_SPEED_X = gameUnitsToPixels(0.15859375) # pixels / ms
+FRICTION = gameUnitsToPixels(0.00049804687) # (pixels / ms) / ms
 
 # Fall Motion
-GRAVITY = 0.00078125 # (pixels / ms) / ms
-MAX_SPEED_Y = 0.2998046875 # pixels / ms
+GRAVITY = gameUnitsToPixels(0.00078125) # (pixels / ms) / ms
+MAX_SPEED_Y = gameUnitsToPixels(0.2998046875) # pixels / ms
 
 # Jump Motion
-JUMP_SPEED = 0.25 # pixels / ms
-AIR_ACCELERATION = 0.0003125 # (pixels / ms) / ms
-JUMP_GRAVITY = 0.0003125 # (pixels / ms) / ms
+JUMP_SPEED = gameUnitsToPixels(0.25) # pixels / ms
+AIR_ACCELERATION = gameUnitsToPixels(0.0003125) # (pixels / ms) / ms
+JUMP_GRAVITY = gameUnitsToPixels(0.0003125) # (pixels / ms) / ms
 
 # Sprites
 SPRITE_FILE_PATH = b'content/MyChar.bmp'
@@ -39,8 +39,14 @@ NUM_WALK_FRAMES = 3
 WALK_FPS = 15
 
 # Collision Rectangle
-COLLISION_X = Rectangle(6, 10, 20, 12)
-COLLISION_Y = Rectangle(10, 2, 12, 30)
+COLLISION_X = Rectangle(int(gameUnitsToPixels(6)),
+                        int(gameUnitsToPixels(10)),
+                        int(gameUnitsToPixels(20)),
+                        int(gameUnitsToPixels(12)))
+COLLISION_Y = Rectangle(int(gameUnitsToPixels(10)),
+                        int(gameUnitsToPixels(2)),
+                        int(gameUnitsToPixels(12)),
+                        int(gameUnitsToPixels(30)))
 
 class MotionType:
     STANDING = 0
@@ -114,38 +120,38 @@ class Player:
 
     def initializeSprite(self, graphics, spriteState):
         if spriteState.horizontalFacing == HorizontalFacing.LEFT:
-            sourceY = CHARACTER_FRAME * game.TILE_SIZE
+            sourceY = CHARACTER_FRAME * TILE_SIZE
         else:
-            sourceY = (CHARACTER_FRAME + 1) * game.TILE_SIZE
+            sourceY = (CHARACTER_FRAME + 1) * TILE_SIZE
 
         if spriteState.motionType == MotionType.WALKING:
-            sourceX = WALK_FRAME * game.TILE_SIZE
+            sourceX = WALK_FRAME * TILE_SIZE
         elif spriteState.motionType == MotionType.STANDING:
-            sourceX = STAND_FRAME * game.TILE_SIZE
+            sourceX = STAND_FRAME * TILE_SIZE
         elif spriteState.motionType == MotionType.INTERACTING:
-            sourceX = BACK_FRAME * game.TILE_SIZE
+            sourceX = BACK_FRAME * TILE_SIZE
         elif spriteState.motionType == MotionType.JUMPING:
-            sourceX = JUMP_FRAME * game.TILE_SIZE
+            sourceX = JUMP_FRAME * TILE_SIZE
         elif spriteState.motionType == MotionType.FALLING:
-            sourceX = FALL_FRAME * game.TILE_SIZE
+            sourceX = FALL_FRAME * TILE_SIZE
         else:
             # TODO: error!
             pass
 
         if spriteState.verticalFacing == VerticalFacing.UP:
-            sourceX += UP_FRAME_OFFSET * game.TILE_SIZE
+            sourceX += UP_FRAME_OFFSET * TILE_SIZE
 
         if spriteState.motionType == MotionType.WALKING:
             self.sprites[spriteState] = AnimatedSprite(
                 graphics, SPRITE_FILE_PATH, sourceX, sourceY,
-                game.TILE_SIZE, game.TILE_SIZE, WALK_FPS, NUM_WALK_FRAMES)
+                TILE_SIZE, TILE_SIZE, WALK_FPS, NUM_WALK_FRAMES)
         else:
             if (spriteState.verticalFacing == VerticalFacing.DOWN and
                 spriteState.motionType in (MotionType.JUMPING, MotionType.FALLING)):
-                sourceX = DOWN_FRAME * game.TILE_SIZE
+                sourceX = DOWN_FRAME * TILE_SIZE
             self.sprites[spriteState] = Sprite(
                 graphics, SPRITE_FILE_PATH, sourceX, sourceY,
-                game.TILE_SIZE, game.TILE_SIZE)
+                TILE_SIZE, TILE_SIZE)
 
     def getSpriteState(self):
         if self.interacting:
@@ -214,7 +220,7 @@ class Player:
                     map, self.rightCollision(delta))
             # React to collision
             if collided:
-                self.x = col * game.TILE_SIZE - COLLISION_X.right()
+                self.x = col * TILE_SIZE - COLLISION_X.right()
                 self.velocityX = 0
             else:
                 self.x += delta
@@ -223,14 +229,14 @@ class Player:
             collided, row, col = getWallCollisionInfo(
                     map, self.leftCollision(0))
             if collided:
-                self.x = col * game.TILE_SIZE + COLLISION_X.right()
+                self.x = col * TILE_SIZE + COLLISION_X.right()
         else:
             # Check collision in the direction of delta
             collided, row, col = getWallCollisionInfo(
                     map, self.leftCollision(delta))
             # React to collision
             if collided:
-                self.x = col * game.TILE_SIZE + COLLISION_X.right()
+                self.x = col * TILE_SIZE + COLLISION_X.right()
                 self.velocityX = 0
             else:
                 self.x += delta
@@ -239,7 +245,7 @@ class Player:
             collided, row, col = getWallCollisionInfo(
                     map, self.rightCollision(0))
             if collided:
-                self.x = col * game.TILE_SIZE - COLLISION_X.right()
+                self.x = col * TILE_SIZE - COLLISION_X.right()
 
     def updateY(self, elapsedTime, map):
         # Update Velocity
@@ -256,7 +262,7 @@ class Player:
                     map, self.bottomCollision(delta))
             # React to collision
             if collided:
-                self.y = row * game.TILE_SIZE - COLLISION_Y.bottom()
+                self.y = row * TILE_SIZE - COLLISION_Y.bottom()
                 self.velocityY = 0
                 self._onGround = True
             else:
@@ -267,14 +273,14 @@ class Player:
             collided, row, col = getWallCollisionInfo(
                     map, self.topCollision(0))
             if collided:
-                self.y = row * game.TILE_SIZE + COLLISION_Y.height
+                self.y = row * TILE_SIZE + COLLISION_Y.height
         else:
             # Check collision in the direction of delta
             collided, row, col = getWallCollisionInfo(
                     map, self.topCollision(delta))
             # React to collision
             if collided:
-                self.y = row * game.TILE_SIZE + COLLISION_Y.height
+                self.y = row * TILE_SIZE + COLLISION_Y.height
                 self.velocityY = 0
             else:
                 self.y += delta
@@ -284,7 +290,7 @@ class Player:
             collided, row, col = getWallCollisionInfo(
                     map, self.bottomCollision(0))
             if collided:
-                self.y = row * game.TILE_SIZE - COLLISION_Y.bottom()
+                self.y = row * TILE_SIZE - COLLISION_Y.bottom()
                 self._onGround = True
 
     def draw(self, graphics):

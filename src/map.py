@@ -1,5 +1,5 @@
 import backdrop
-import game
+from graphics import TILE_SIZE
 from sprite import Sprite
 
 class TileType:
@@ -38,8 +38,8 @@ class Map:
 
         sprite = Sprite(graphics,
                         b'content/PrtCave.bmp',
-                        game.TILE_SIZE, 0,
-                        game.TILE_SIZE, game.TILE_SIZE)
+                        TILE_SIZE, 0,
+                        TILE_SIZE, TILE_SIZE)
         tile = Tile(TileType.WALL_TILE, sprite)
         row = 11
         for col in range(numCols):
@@ -52,16 +52,16 @@ class Map:
 
         chainTop = Sprite(graphics,
                           b'content/PrtCave.bmp',
-                          11*game.TILE_SIZE, 2*game.TILE_SIZE,
-                          game.TILE_SIZE, game.TILE_SIZE)
+                          11*TILE_SIZE, 2*TILE_SIZE,
+                          TILE_SIZE, TILE_SIZE)
         chainMiddle = Sprite(graphics,
                              b'content/PrtCave.bmp',
-                             12*game.TILE_SIZE, 2*game.TILE_SIZE,
-                             game.TILE_SIZE, game.TILE_SIZE)
+                             12*TILE_SIZE, 2*TILE_SIZE,
+                             TILE_SIZE, TILE_SIZE)
         chainBottom = Sprite(graphics,
                              b'content/PrtCave.bmp',
-                             13*game.TILE_SIZE, 2*game.TILE_SIZE,
-                             game.TILE_SIZE, game.TILE_SIZE)
+                             13*TILE_SIZE, 2*TILE_SIZE,
+                             TILE_SIZE, TILE_SIZE)
 
         ret.backgroundTiles[8][2] = chainTop
         ret.backgroundTiles[9][2] = chainMiddle
@@ -70,10 +70,10 @@ class Map:
         return ret
 
     def getCollidingTiles(self, rectangle):
-        firstRow = rectangle.top() // game.TILE_SIZE
-        lastRow = rectangle.bottom() // game.TILE_SIZE
-        firstCol = rectangle.left() // game.TILE_SIZE
-        lastCol = rectangle.right() // game.TILE_SIZE
+        firstRow = rectangle.top() // TILE_SIZE
+        lastRow = rectangle.bottom() // TILE_SIZE
+        firstCol = rectangle.left() // TILE_SIZE
+        lastCol = rectangle.right() // TILE_SIZE
 
         collisionTiles = []
         for row in range(firstRow, lastRow + 1):
@@ -95,11 +95,11 @@ class Map:
             for col in range(len(self.backgroundTiles[row])):
                 if self.backgroundTiles[row][col]:
                     self.backgroundTiles[row][col].draw(
-                            graphics, col*game.TILE_SIZE, row*game.TILE_SIZE)
+                            graphics, col*TILE_SIZE, row*TILE_SIZE)
 
     def draw(self, graphics):
         for row in range(len(self.tiles)):
             for col in range(len(self.tiles[row])):
                 if self.tiles[row][col].sprite:
                     self.tiles[row][col].sprite.draw(
-                            graphics, col*game.TILE_SIZE, row*game.TILE_SIZE)
+                            graphics, col*TILE_SIZE, row*TILE_SIZE)

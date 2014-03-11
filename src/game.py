@@ -1,14 +1,13 @@
 import ctypes
 from sdl2 import *
 
-from graphics import Graphics
+from graphics import Graphics, SCREEN_WIDTH, SCREEN_HEIGHT
 from input import Input
 from map import Map
 from player import Player
 from sprite import Sprite
 
 FPS = 60
-TILE_SIZE = 32
 
 class Game:
     def __init__(self):
@@ -22,7 +21,7 @@ class Game:
         input = Input()
         event = SDL_Event()
 
-        self.player = Player(graphics, 320, 240)
+        self.player = Player(graphics, SCREEN_WIDTH//2, SCREEN_HEIGHT//2)
         self.map = Map.createTestMap(graphics)
 
         running = True
