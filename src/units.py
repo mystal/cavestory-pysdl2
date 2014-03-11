@@ -3,9 +3,11 @@
 #int Pixel # Integer for discrete units for the screen. Pixel values can be positive or negative.
 #unsigned int Tile # Also discrete, but non-negative.
 #unsigned int Frame # Discrete. Non-negative.
+#float Degrees
 
 #float Velocity # Games / MS
 #float Acceleration # Games / MS^2
+#float AngularVelocity # Degrees / MS
 
 #unsigned int MS # Discrete Milliseconds.
 #unsigned int FPS # Frames per second (Hz, 1 / Second)

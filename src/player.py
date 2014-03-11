@@ -329,3 +329,6 @@ class Player:
 
     def onGround(self):
         return self._onGround
+
+    def centerX(self):
+        return self.x + units.tileToGame(1) / 2

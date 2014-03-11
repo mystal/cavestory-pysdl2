@@ -1,6 +1,7 @@
 import ctypes
 from sdl2 import *
 
+from first_cave_bat import FirstCaveBat
 from graphics import Graphics
 from input import Input
 from map import Map
@@ -30,6 +31,9 @@ class Game:
         self.player = Player(graphics,
                              units.tileToGame(SCREEN_WIDTH // 2),
                              units.tileToGame(SCREEN_HEIGHT // 2))
+        self.bat = FirstCaveBat(graphics,
+                                units.tileToGame(5),
+                                units.tileToGame(SCREEN_HEIGHT // 2))
         self.map = Map.createTestMap(graphics)
 
         running = True
@@ -89,11 +93,13 @@ class Game:
 
     def update(self, elapsedTime):
         self.player.update(elapsedTime, self.map)
+        self.bat.update(elapsedTime, self.player.centerX())
         self.map.update(elapsedTime)
 
     def draw(self, graphics):
         graphics.clear()
         self.map.drawBackground(graphics)
+        self.bat.draw(graphics)
         self.player.draw(graphics)
         self.map.draw(graphics)
         graphics.flip()
