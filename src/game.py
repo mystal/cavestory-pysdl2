@@ -104,4 +104,5 @@ class Game:
         self.bat.draw(graphics)
         self.player.draw(graphics)
         self.map.draw(graphics)
+        self.player.drawHud(graphics)
         graphics.flip()

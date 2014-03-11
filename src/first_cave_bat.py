@@ -10,6 +10,8 @@ NUM_FLY_FRAMES = 3 # units.Frame
 
 ANGULAR_VELOCITY = 120.0 / 1000 # units.AngularVelocity
 
+FLIGHT_AMPLITUDE = 5 * units.HALF_TILE # units.Tile
+
 class Facing:
     LEFT = 0
     RIGHT = 1
@@ -53,14 +55,14 @@ class FirstCaveBat:
     def update(self, elapsedTime, playerX):
         self.flight_angle += ANGULAR_VELOCITY * elapsedTime
 
-        self.facing = Facing.LEFT if self.x + units.tileToGame(1) / 2 > playerX else Facing.RIGHT
+        self.facing = Facing.LEFT if self.x + units.HALF_TILE > playerX else Facing.RIGHT
 
-        self.y = self.centerY + units.tileToGame(5) / 2 * math.sin(
+        self.y = self.centerY + FLIGHT_AMPLITUDE * math.sin(
                 math.radians(self.flight_angle))
 
         self.sprites[self.getSpriteState()].update(elapsedTime)
 
     def damageRect(self):
-        return Rectangle(self.x + units.tileToGame(1) / 2,
-                         self.y + units.tileToGame(1) / 2,
+        return Rectangle(self.x + units.HALF_TILE,
+                         self.y + units.HALF_TILE,
                          0, 0)

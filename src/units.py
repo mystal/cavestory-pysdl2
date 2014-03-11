@@ -28,3 +28,5 @@ def tileToGame(tile):
 
 def tileToPixel(tile):
     return gameToPixel(tileToGame(tile))
+
+HALF_TILE = tileToGame(1) / 2 # units.Game

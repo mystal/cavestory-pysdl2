@@ -45,6 +45,20 @@ COLLISION_Y = Rectangle(10, 2, 12, 30) # units.Game
 INVINCIBLE_FLASH_TIME = 50 # units.MS
 INVINCIBLE_TIME = 3000 # units.MS
 
+# HUD Constants
+HEALTH_BAR_X = units.tileToGame(1) # units.Game
+HEALTH_BAR_Y = units.tileToGame(2) # units.Game
+HEALTH_BAR_SOURCE_X = 0 # units.Game
+HEALTH_BAR_SOURCE_Y = 5 * units.HALF_TILE # units.Game
+HEALTH_BAR_SOURCE_WIDTH = 4 # units.Tile
+HEALTH_BAR_SOURCE_HEIGHT = units.HALF_TILE # units.Game
+
+HEALTH_FILL_X = 5 * units.HALF_TILE # units.Game
+HEALTH_FILL_Y = units.tileToGame(2) # units.Game
+HEALTH_FILL_SOURCE_X = 0 # units.Game
+HEALTH_FILL_SOURCE_Y = 3 * units.HALF_TILE # units.Game
+HEALTH_FILL_SOURCE_HEIGHT = units.HALF_TILE # units.Game
+
 class MotionType:
     STANDING = 0
     INTERACTING = 1
@@ -107,9 +121,30 @@ class Player:
         self.invincible = False
 
         self.sprites = {}
+        self.healthBarSprite = None
+        self.healthFillSprite = None
+        self.three = None
         self.initializeSprites(graphics)
 
     def initializeSprites(self, graphics):
+        self.healthBarSprite = Sprite(
+                graphics, b'assets/TextBox.bmp',
+                units.gameToPixel(HEALTH_BAR_SOURCE_X),
+                units.gameToPixel(HEALTH_BAR_SOURCE_Y),
+                units.tileToPixel(HEALTH_BAR_SOURCE_WIDTH),
+                units.gameToPixel(HEALTH_BAR_SOURCE_HEIGHT))
+        self.healthFillSprite = Sprite(
+                graphics, b'assets/TextBox.bmp',
+                units.gameToPixel(HEALTH_FILL_SOURCE_X),
+                units.gameToPixel(HEALTH_FILL_SOURCE_Y),
+                units.gameToPixel(5 * units.HALF_TILE - 2),
+                units.gameToPixel(HEALTH_FILL_SOURCE_HEIGHT))
+        self.three = Sprite(
+                graphics, b'assets/TextBox.bmp',
+                units.gameToPixel(3 * units.HALF_TILE),
+                units.gameToPixel(7 * units.HALF_TILE),
+                units.gameToPixel(units.HALF_TILE),
+                units.gameToPixel(units.HALF_TILE))
         for motionType in range(MotionType.COUNT):
             for horizontalFacing in range(HorizontalFacing.COUNT):
                 for verticalFacing in range(VerticalFacing.COUNT):
@@ -300,11 +335,22 @@ class Player:
                 self.y = units.tileToGame(row) - COLLISION_Y.bottom()
                 self._onGround = True
 
+    def spriteIsVisible(self):
+        return not (self.invincible and
+            self.invincibleTime // INVINCIBLE_FLASH_TIME % 2 == 0)
+
     def draw(self, graphics):
-        if (self.invincible and
-            self.invincibleTime // INVINCIBLE_FLASH_TIME % 2 == 0):
-            return
-        self.sprites[self.getSpriteState()].draw(graphics, self.x, self.y)
+        if self.spriteIsVisible():
+            self.sprites[self.getSpriteState()].draw(graphics, self.x, self.y)
+
+    def drawHud(self, graphics):
+        if self.spriteIsVisible():
+            self.healthBarSprite.draw(
+                    graphics, HEALTH_BAR_X, HEALTH_BAR_Y)
+            self.healthFillSprite.draw(
+                    graphics, HEALTH_FILL_X, HEALTH_FILL_Y)
+
+            self.three.draw(graphics, units.tileToGame(2), units.tileToGame(2))
 
     def startMovingLeft(self):
         self.accelerationX = -1
@@ -360,4 +406,4 @@ class Player:
                          COLLISION_Y.height)
 
     def centerX(self):
-        return self.x + units.tileToGame(1) / 2
+        return self.x + units.HALF_TILE

@@ -24,7 +24,9 @@ class Graphics:
         if not spriteSheet:
             surface = SDL_LoadBMP(filePath)
             if blackIsTransparent:
-                SDL_SetColorKey(surface, SDL_TRUE, 0)
+                SDL_SetColorKey(surface,
+                                SDL_TRUE,
+                                SDL_MapRGB(surface.contents.format, 0, 0, 0))
             spriteSheet = SDL_CreateTextureFromSurface(self.renderer, surface)
             self.spriteSheets[filePath] = spriteSheet
             SDL_FreeSurface(surface)
