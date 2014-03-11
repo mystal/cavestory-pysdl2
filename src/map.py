@@ -28,7 +28,7 @@ class Map:
     def createTestMap(graphics):
         ret = Map()
 
-        ret.backdrop = backdrop.FixedBackdrop(b'content/bkBlue.bmp', graphics)
+        ret.backdrop = backdrop.FixedBackdrop(b'assets/bkBlue.bmp', graphics)
 
         numRows = 15 # 15 * 32 = 480
         numCols = 20 # 20 * 32 = 640
@@ -37,7 +37,7 @@ class Map:
         ret.backgroundTiles = [[None for _ in range(numCols)] for _ in range(numRows)]
 
         sprite = Sprite(graphics,
-                        b'content/PrtCave.bmp',
+                        b'assets/PrtCave.bmp',
                         TILE_SIZE, 0,
                         TILE_SIZE, TILE_SIZE)
         tile = Tile(TileType.WALL_TILE, sprite)
@@ -51,15 +51,15 @@ class Map:
         ret.tiles[10][3] = tile
 
         chainTop = Sprite(graphics,
-                          b'content/PrtCave.bmp',
+                          b'assets/PrtCave.bmp',
                           11*TILE_SIZE, 2*TILE_SIZE,
                           TILE_SIZE, TILE_SIZE)
         chainMiddle = Sprite(graphics,
-                             b'content/PrtCave.bmp',
+                             b'assets/PrtCave.bmp',
                              12*TILE_SIZE, 2*TILE_SIZE,
                              TILE_SIZE, TILE_SIZE)
         chainBottom = Sprite(graphics,
-                             b'content/PrtCave.bmp',
+                             b'assets/PrtCave.bmp',
                              13*TILE_SIZE, 2*TILE_SIZE,
                              TILE_SIZE, TILE_SIZE)
 

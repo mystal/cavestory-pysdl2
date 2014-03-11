@@ -21,7 +21,7 @@ AIR_ACCELERATION = gameUnitsToPixels(0.0003125) # (pixels / ms) / ms
 JUMP_GRAVITY = gameUnitsToPixels(0.0003125) # (pixels / ms) / ms
 
 # Sprites
-SPRITE_FILE_PATH = b'content/MyChar.bmp'
+SPRITE_FILE_PATH = b'assets/MyChar.bmp'
 
 # Sprite Frames
 CHARACTER_FRAME = 0 # Which Quote "costume" to use
