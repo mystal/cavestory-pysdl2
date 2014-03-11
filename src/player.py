@@ -1,10 +1,9 @@
 from collections import namedtuple
 
-from animated_sprite import AnimatedSprite
 from graphics import gameUnitsToPixels, TILE_SIZE
 from map import TileType
 from rectangle import Rectangle
-from sprite import Sprite
+from sprite import Sprite, AnimatedSprite
 
 # Walk Motion
 WALKING_ACCELERATION = gameUnitsToPixels(0.00083007812) # (pixels / ms) / ms
