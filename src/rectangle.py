@@ -17,3 +17,9 @@ class Rectangle:
 
     def bottom(self):
         return self.y + self.height
+
+    def collidesWith(self, other):
+        return (self.right() >= other.left() and
+                self.left() <= other.right() and
+                self.top() <= other.bottom() and
+                self.bottom() >= other.top())

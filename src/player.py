@@ -330,5 +330,11 @@ class Player:
     def onGround(self):
         return self._onGround
 
+    def damageRect(self):
+        return Rectangle(self.x + COLLISION_X.left(),
+                         self.y + COLLISION_Y.top(),
+                         COLLISION_X.width,
+                         COLLISION_Y.height)
+
     def centerX(self):
         return self.x + units.tileToGame(1) / 2

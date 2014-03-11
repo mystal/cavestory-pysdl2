@@ -1,6 +1,7 @@
 from collections import namedtuple
 import math
 
+from rectangle import Rectangle
 from sprite import AnimatedSprite
 import units
 
@@ -21,6 +22,7 @@ class SpriteState(namedtuple('SpriteState',
 
 class FirstCaveBat:
     def __init__(self, graphics, x, y):
+        self.centerY = y # units.Game
         self.x = x # units.Game
         self.y = y # units.Game
         self.facing = Facing.RIGHT
@@ -46,13 +48,19 @@ class FirstCaveBat:
         return SpriteState(self.facing)
 
     def draw(self, graphics):
-        y = self.y + units.tileToGame(5) / 2 * math.sin(
-                math.radians(self.flight_angle))
-        self.sprites[self.getSpriteState()].draw(graphics, self.x, y)
+        self.sprites[self.getSpriteState()].draw(graphics, self.x, self.y)
 
     def update(self, elapsedTime, playerX):
         self.flight_angle += ANGULAR_VELOCITY * elapsedTime
 
         self.facing = Facing.LEFT if self.x + units.tileToGame(1) / 2 > playerX else Facing.RIGHT
 
+        self.y = self.centerY + units.tileToGame(5) / 2 * math.sin(
+                math.radians(self.flight_angle))
+
         self.sprites[self.getSpriteState()].update(elapsedTime)
+
+    def damageRect(self):
+        return Rectangle(self.x + units.tileToGame(1) / 2,
+                         self.y + units.tileToGame(1) / 2,
+                         0, 0)

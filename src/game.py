@@ -32,8 +32,8 @@ class Game:
                              units.tileToGame(SCREEN_WIDTH // 2),
                              units.tileToGame(SCREEN_HEIGHT // 2))
         self.bat = FirstCaveBat(graphics,
-                                units.tileToGame(5),
-                                units.tileToGame(SCREEN_HEIGHT // 2))
+                                units.tileToGame(7),
+                                units.tileToGame(SCREEN_HEIGHT // 2 + 1))
         self.map = Map.createTestMap(graphics)
 
         running = True
@@ -94,7 +94,10 @@ class Game:
     def update(self, elapsedTime):
         self.player.update(elapsedTime, self.map)
         self.bat.update(elapsedTime, self.player.centerX())
-        self.map.update(elapsedTime)
+
+        print('Checking collisions')
+        if self.bat.damageRect().collidesWith(self.player.damageRect()):
+            print('Quote takes damage!')
 
     def draw(self, graphics):
         graphics.clear()
