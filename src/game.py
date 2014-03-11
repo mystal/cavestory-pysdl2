@@ -9,6 +9,7 @@ from sprite import Sprite
 import units
 
 FPS = 60 # units.FPS
+MAX_FRAME_TIME = int(5 * (1000 / FPS))
 
 SCREEN_WIDTH = 20 # units.Tile
 SCREEN_HEIGHT = 15 # units.Tile
@@ -72,7 +73,8 @@ class Game:
                 self.player.stopJump()
 
             currentTime = SDL_GetTicks() # units.MS
-            self.update(currentTime - lastUpdateTime)
+            elapsedTime = currentTime - lastUpdateTime # units.MS
+            self.update(min(elapsedTime, MAX_FRAME_TIME))
             lastUpdateTime = currentTime
 
             self.draw(graphics)
