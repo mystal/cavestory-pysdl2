@@ -16,6 +16,7 @@ MAX_SPEED_Y = 0.2998046875 # units.Velocity
 
 # Jump Motion
 JUMP_SPEED = 0.25 # units.Velocity
+SHORT_JUMP_SPEED = JUMP_SPEED / 1.5 # units.Velocity
 AIR_ACCELERATION = 0.0003125 # units.Acceleration
 JUMP_GRAVITY = 0.0003125 # units.Acceleration
 
@@ -40,6 +41,9 @@ WALK_FPS = 15 # units.FPS
 # Collision Rectangle
 COLLISION_X = Rectangle(6, 10, 20, 12) # units.Game
 COLLISION_Y = Rectangle(10, 2, 12, 30) # units.Game
+
+INVINCIBLE_FLASH_TIME = 50 # units.MS
+INVINCIBLE_TIME = 3000 # units.MS
 
 class MotionType:
     STANDING = 0
@@ -98,6 +102,9 @@ class Player:
 
         self.jumpActive = False
         self.interacting = False
+
+        self.invincibleTime = 0 # units.MS
+        self.invincible = False
 
         self.sprites = {}
         self.initializeSprites(graphics)
@@ -188,6 +195,10 @@ class Player:
 
     def update(self, elapsedTime, map):
         self.sprites[self.getSpriteState()].update(elapsedTime)
+
+        if self.invincible:
+            self.invincibleTime += elapsedTime
+            self.invincible = self.invincibleTime < INVINCIBLE_TIME
 
         self.updateX(elapsedTime, map)
         self.updateY(elapsedTime, map)
@@ -290,6 +301,9 @@ class Player:
                 self._onGround = True
 
     def draw(self, graphics):
+        if (self.invincible and
+            self.invincibleTime // INVINCIBLE_FLASH_TIME % 2 == 0):
+            return
         self.sprites[self.getSpriteState()].draw(graphics, self.x, self.y)
 
     def startMovingLeft(self):
@@ -326,6 +340,15 @@ class Player:
 
     def stopJump(self):
         self.jumpActive = False
+
+    def takeDamage(self):
+        if self.invincible:
+            return
+
+        self.velocityY = min(self.velocityY, -SHORT_JUMP_SPEED)
+        print('Quote takes damage!')
+        self.invincible = True
+        self.invincibleTime = 0
 
     def onGround(self):
         return self._onGround

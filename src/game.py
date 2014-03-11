@@ -95,9 +95,8 @@ class Game:
         self.player.update(elapsedTime, self.map)
         self.bat.update(elapsedTime, self.player.centerX())
 
-        print('Checking collisions')
         if self.bat.damageRect().collidesWith(self.player.damageRect()):
-            print('Quote takes damage!')
+            self.player.takeDamage()
 
     def draw(self, graphics):
         graphics.clear()
