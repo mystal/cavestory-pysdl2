@@ -1,6 +1,7 @@
 from collections import namedtuple
 
 from map import TileType
+from number_sprite import NumberSprite
 from rectangle import Rectangle
 from sprite import Sprite, AnimatedSprite
 import units
@@ -58,6 +59,10 @@ HEALTH_FILL_Y = units.tileToGame(2) # units.Game
 HEALTH_FILL_SOURCE_X = 0 # units.Game
 HEALTH_FILL_SOURCE_Y = 3 * units.HALF_TILE # units.Game
 HEALTH_FILL_SOURCE_HEIGHT = units.HALF_TILE # units.Game
+
+HEALTH_NUMBER_X = 3 * units.HALF_TILE # units.Game
+HEALTH_NUMBER_Y = units.tileToGame(2) # units.Game
+HEALTH_NUMBER_NUM_DIGITS = 2
 
 class MotionType:
     STANDING = 0
@@ -123,7 +128,7 @@ class Player:
         self.sprites = {}
         self.healthBarSprite = None
         self.healthFillSprite = None
-        self.three = None
+        self.healthNumberSprite = None
         self.initializeSprites(graphics)
 
     def initializeSprites(self, graphics):
@@ -139,12 +144,8 @@ class Player:
                 units.gameToPixel(HEALTH_FILL_SOURCE_Y),
                 units.gameToPixel(5 * units.HALF_TILE - 2),
                 units.gameToPixel(HEALTH_FILL_SOURCE_HEIGHT))
-        self.three = Sprite(
-                graphics, b'assets/TextBox.bmp',
-                units.gameToPixel(3 * units.HALF_TILE),
-                units.gameToPixel(7 * units.HALF_TILE),
-                units.gameToPixel(units.HALF_TILE),
-                units.gameToPixel(units.HALF_TILE))
+        self.healthNumberSprite = NumberSprite(
+                graphics, 3, HEALTH_NUMBER_NUM_DIGITS)
         for motionType in range(MotionType.COUNT):
             for horizontalFacing in range(HorizontalFacing.COUNT):
                 for verticalFacing in range(VerticalFacing.COUNT):
@@ -350,7 +351,8 @@ class Player:
             self.healthFillSprite.draw(
                     graphics, HEALTH_FILL_X, HEALTH_FILL_Y)
 
-            self.three.draw(graphics, units.tileToGame(2), units.tileToGame(2))
+            self.healthNumberSprite.draw(
+                    graphics, HEALTH_NUMBER_X, HEALTH_NUMBER_Y)
 
     def startMovingLeft(self):
         self.accelerationX = -1

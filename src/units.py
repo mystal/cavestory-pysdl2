@@ -13,7 +13,7 @@
 #unsigned int FPS # Frames per second (Hz, 1 / Second)
 
 # Constants
-TILE_SIZE = 32 # Pixels
+TILE_SIZE = 32 # Game
 
 # Conversion functions
 def gameToPixel(game):
@@ -29,4 +29,4 @@ def tileToGame(tile):
 def tileToPixel(tile):
     return gameToPixel(tileToGame(tile))
 
-HALF_TILE = tileToGame(1) / 2 # units.Game
+HALF_TILE = tileToGame(1) / 2 # Game
