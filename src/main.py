@@ -2,8 +2,7 @@ from game import Game
 
 def main():
     game = Game()
-    game.eventLoop()
-    game.cleanUp()
+    game.run()
 
     return 0
 

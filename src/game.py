@@ -19,10 +19,14 @@ class Game:
     def __init__(self):
         SDL_Init(SDL_INIT_EVERYTHING)
 
-    def cleanUp(self):
+        self.player = None
+        self.bat = None
+        self.map = None
+
+    def __del__(self):
         SDL_Quit()
 
-    def eventLoop(self):
+    def run(self):
         graphics = Graphics(units.tileToPixel(SCREEN_WIDTH),
                             units.tileToPixel(SCREEN_HEIGHT))
         input = Input()
@@ -88,8 +92,6 @@ class Game:
             elapsedTime = SDL_GetTicks() - startTime # units.MS
             if elapsedTime < msPerFrame:
                 SDL_Delay(msPerFrame - elapsedTime)
-
-        graphics.cleanUp()
 
     def update(self, elapsedTime):
         self.player.update(elapsedTime, self.map)

@@ -13,7 +13,7 @@ class Graphics:
 
         self.spriteSheets = {}
 
-    def cleanUp(self):
+    def __del__(self):
         for spriteSheet in self.spriteSheets.values():
             SDL_DestroyTexture(spriteSheet)
         SDL_DestroyRenderer(self.renderer)
